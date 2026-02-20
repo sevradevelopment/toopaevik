@@ -1,0 +1,105 @@
+/* Tööpäevik – kohandatud stiilid */
+.app-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+}
+
+.app-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.app-btn:active {
+  transform: scale(0.98);
+}
+
+.app-btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.app-btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.app-btn-secondary {
+  background: var(--secondary);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+
+.app-btn-secondary:hover {
+  background: var(--secondary-hover);
+}
+
+.app-input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.app-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.confirmation-box {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1px solid #86efac;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-top: 0.75rem;
+  font-weight: 500;
+  color: #166534;
+}
+
+.greeting {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 0.5rem;
+}
+
+.nav-link {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background: var(--secondary-hover);
+}
+
+.nav-link.active {
+  background: var(--primary);
+  color: white;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.role-admin { background: #fef3c7; color: #92400e; }
+.role-vedaja { background: #dbeafe; color: #1e40af; }
+.role-hakkur { background: #d1fae5; color: #065f46; }

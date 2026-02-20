@@ -1,0 +1,67 @@
+.nav {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.75rem 1rem;
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.nav a {
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #475569;
+  font-weight: 500;
+}
+
+.nav a:hover {
+  background: #f1f5f9;
+  color: #0f766e;
+}
+
+.nav a.active {
+  background: #0d9488;
+  color: white;
+}
+
+.user {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.badge.admin { background: #fef3c7; color: #92400e; }
+.badge.vedaja { background: #dbeafe; color: #1e40af; }
+.badge.hakkur { background: #d1fae5; color: #065f46; }
+
+.logout {
+  padding: 0.4rem 0.75rem;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.logout:hover {
+  background: #e2e8f0;
+  color: #0f766e;
+}
