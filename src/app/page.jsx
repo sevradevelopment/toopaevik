@@ -1,81 +1,72 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useAuth } from "@/context/AuthContext";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import styles from "./home.module.css";
+import { useAuth } from "@/context/AuthContext";
+import styles from "./login.module.css";
 
-function getGreeting() {
-  const h = new Date().getHours();
-  if (h < 12) return "hommikust";
-  if (h < 18) return "päevast";
-  return "õhtust";
-}
+export default function LoginPage() {
+  const router = useRouter();
+  const { error: authError } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-export default function HomePage() {
-  const { profile } = useAuth();
-  const [locations, setLocations] = useState([]);
-  const [confirmMsg, setConfirmMsg] = useState(null);
-
-  useEffect(() => {
-    supabase
-      .from("locations")
-      .select("id, name")
-      .order("name")
-      .then(({ data }) => setLocations(data || []));
-  }, []);
-
-  const name = profile?.full_name || "töötaja";
-  const greeting = getGreeting();
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+      if (err) {
+        setError(err.message || "Sisselogimine ebaõnnestus");
+        return;
+      }
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      setError(err?.message || "Sisselogimine ebaõnnestus");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <div className={styles.page}>
-      <h1 className={styles.greeting}>
-        Tere {greeting}, {name}!
-      </h1>
-
-      <section className={styles.section}>
-        <h2>Asukohad (kuhu kaupa veetakse)</h2>
-        <ul className={styles.locationList}>
-          {locations.length === 0 ? (
-            <li>Mäetaguse, Puurmanni, Avinurme, Kuusna, Rava, Sinimäe, Tammistu, Peipsiääre, Kavastu, Loviisa, Orimattila, Balti elekter</li>
-          ) : (
-            locations.map((loc) => (
-              <li key={loc.id}>{loc.name}</li>
-            ))
-          )}
-        </ul>
-        <p className={styles.hint}>Asukohti saab halduses muuta (Admin).</p>
-      </section>
-
-      <section className={styles.section}>
-        <h2>Kiirlingid</h2>
-        <div className={styles.links}>
-          <a href="/tankimine" className={styles.linkCard}>
-            Tankimine
-          </a>
-          <a href="/tunnid" className={styles.linkCard}>
-            Töötunnid
-          </a>
-          <a href="/vedu" className={styles.linkCard}>
-            Vedu (mida ja palju)
-          </a>
-          {(profile?.role === "Hakkur" || profile?.role === "Admin") && (
-            <a href="/tootmine" className={styles.linkCard}>
-              Hakkepuidu tootmine (m³)
-            </a>
-          )}
-          <a href="/logid" className={styles.linkCard}>
-            Logid
-          </a>
-        </div>
-      </section>
-
-      {confirmMsg && (
-        <div className={styles.confirmation} role="alert">
-          {confirmMsg}
-        </div>
-      )}
+    <div className={styles.wrap}>
+      <div className={styles.card}>
+        <h1 className={styles.title}>Tööpäevik</h1>
+        <p className={styles.subtitle}>Hakkepuiduvedu – logi sisse</p>
+        {authError && (
+          <p className={styles.authError}>
+            Ühendusviga. Kontrolli Vercelil: Settings → Environment Variables → <code>NEXT_PUBLIC_SUPABASE_URL</code>, <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code>.
+          </p>
+        )}
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <label className={styles.label}>E-post</label>
+          <input
+            type="email"
+            className={styles.input}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="nimi@firma.ee"
+            required
+          />
+          <label className={styles.label}>Parool</label>
+          <input
+            type="password"
+            className={styles.input}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          {error && <p className={styles.error}>{error}</p>}
+          <button type="submit" className={styles.btn} disabled={loading}>
+            {loading ? "Login sisse…" : "Sisselogimine"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
