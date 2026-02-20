@@ -9,39 +9,69 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (session?.user) fetchProfile(session.user.id);
-      else setProfile(null);
-      setLoading(false);
-    });
+    let subscription;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+    async function init() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
         setUser(session?.user ?? null);
-        if (session?.user) await fetchProfile(session.user.id);
-        else setProfile(null);
+        if (session?.user) {
+          const { data } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", session.user.id)
+            .single();
+          setProfile(data ?? null);
+        } else {
+          setProfile(null);
+        }
+      } catch (e) {
+        setUser(null);
+        setProfile(null);
+        setError(e?.message || "Auth error");
+      } finally {
+        setLoading(false);
       }
-    );
+    }
 
-    return () => subscription.unsubscribe();
+    init();
+
+    try {
+      const { data: { subscription: sub } } = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          setUser(session?.user ?? null);
+          if (session?.user) {
+            try {
+              const { data } = await supabase
+                .from("profiles")
+                .select("*")
+                .eq("id", session.user.id)
+                .single();
+              setProfile(data ?? null);
+            } catch {
+              setProfile(null);
+            }
+          } else {
+            setProfile(null);
+          }
+        }
+      );
+      subscription = sub;
+    } catch {
+      subscription = { unsubscribe: () => {} };
+    }
+
+    return () => subscription?.unsubscribe?.();
   }, []);
-
-  async function fetchProfile(userId) {
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
-    setProfile(data);
-  }
 
   const value = {
     user,
     profile,
     loading,
+    error,
     role: profile?.role || null,
     isAdmin: profile?.role === "Admin",
   };
